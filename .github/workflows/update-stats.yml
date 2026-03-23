@@ -28,20 +28,20 @@ jobs:
       - name: Generate Top Languages Card
         uses: readme-tools/github-readme-stats-action@v1
         with:
-          card: languages
+          # Changed from 'languages' to 'top-langs'
+          card: top-langs
           options: "username=silvixp&layout=compact&theme=tokyonight&hide=html,css&count_private=true"
           path: profile-langs.svg
           token: ${{ secrets.GH_TOKEN }}
 
-      - name: Generate Contribution Graph
+      - name: Generate Activity Graph
         uses: readme-tools/github-readme-stats-action@v1
         with:
-          card: activity-graph
-          # This creates a wide, sleek line graph of your weekly activity
-          options: "username=silvixp&theme=tokyonight&area=true&hide_border=true"
+          # Changed from 'activity-graph' to 'graph'
+          card: graph
+          options: "username=silvixp&theme=tokyonight&area=true&hide_border=true&point_size=0"
           path: profile-graph.svg
           token: ${{ secrets.GH_TOKEN }}
-
       - name: Commit and Push
         run: |
           git config user.name "github-actions[bot]"
