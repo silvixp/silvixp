@@ -31,9 +31,11 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          
+          # Stage the file
           git add profile-stats.svg
           
-          # Only proceed if there are actually changes to commit
+          # Only commit if there are changes
           if git diff --quiet && git diff --staged --quiet; then
             echo "No changes to commit"
             exit 0
@@ -41,7 +43,5 @@ jobs:
 
           git commit -m "Update GitHub stats"
           
-          # Pull latest changes to avoid the "rejected" error
-          git pull --rebase origin main
-          
-          git push
+          # FORCE PUSH to override the history mismatch
+          git push origin main --force
