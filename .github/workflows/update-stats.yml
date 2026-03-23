@@ -11,37 +11,27 @@ permissions:
 jobs:
   publish:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout Repository
+        uses: actions/checkout@v4
         with:
-          token: ${{ secrets.GH_TOKEN }} 
+          token: ${{ secrets.GH_TOKEN }}
+          fetch-depth: 0 
 
       - name: Generate Stats Card
         uses: readme-tools/github-readme-stats-action@v1
         with:
           card: stats
-          # Add your options here just like the URL params
           options: "username=silvixp&show_icons=true&count_private=true"
           path: profile-stats.svg
           token: ${{ secrets.GH_TOKEN }}
 
-      - name: Commit and Push
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }} 
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          
-          # Stage the file
-          git add profile-stats.svg
-          
-          # Only commit if there are changes
-          if git diff --quiet && git diff --staged --quiet; then
-            echo "No changes to commit"
-            exit 0
-          fi
-
-          git commit -m "Update GitHub stats"
-          
-          # FORCE PUSH to override the history mismatch
-          git push origin main --force
+      - name: Commit and Push Changes
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "Update GitHub stats [skip ci]"
+          file_pattern: 'profile-stats.svg'
+          branch: main
+          push_options: '--force' 
