@@ -2,8 +2,8 @@ name: Update GitHub Stats
 
 on:
   schedule:
-    - cron: '0 0 * * 0' # Runs every Sunday at midnight
-  workflow_dispatch:      # Allows manual trigger
+    - cron: '0 0 * * 0'
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -12,32 +12,28 @@ jobs:
   github-metrics:
     runs-on: ubuntu-latest
     steps:
-      - name: Generate Professional Metrics
+      - name: Generate Clean Metrics
         uses: lowlighter/metrics@latest
         with:
-          # Your PAT is required to see private/company data
           token: ${{ secrets.GH_TOKEN }}
-          
-          # Output file name
           filename: profile-stats.svg
           
-          # Core Settings
-          base: header, activity, community, repositories, metadata
-          config_timezone: UTC
-          base_indepth: yes          # Forces deep scan of all commits (Fixes the "10 commits" issue)
+          # Use the 'repository' template for a much cleaner, spaced-out layout
+          template: repository
+          config_theme: tokyonight
           
-          # Activity Graph (Isometric Calendar)
-          # This replaces the "weird" graph with a professional 3D activity view
-          plugin_isocalendar: yes
-          plugin_isocalendar_duration: half-year
+          # Focus only on high-value data
+          base: header, activity, repositories
+          base_indepth: yes
           
-          # Styling
-          config_order: base.header, isocalendar, base.activity, base.repositories
-          template: classic
-          config_theme: tokyonight   # Matches your preferred dark theme
+          # The "Sleek" Graph: Using the 'activity' plugin instead of the 3D calendar
+          # This creates a very clean line/bar chart of your recent momentum
+          plugin_activity: yes
+          plugin_activity_limit: 5
+          plugin_activity_days: 14
+          plugin_activity_filter: push, issue, pr
           
-          # Private Data Handling
-          config_padding: 0, 8%
-          output_action: commit      # Automatically commits the file to your repo
+          # Styling adjustments for a minimal look
+          config_padding: 0, 5%
+          output_action: commit
           committer_branch: main
-          committer_message: "Update GitHub metrics [skip ci]"
