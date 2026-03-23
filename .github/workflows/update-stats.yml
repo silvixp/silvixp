@@ -2,45 +2,42 @@ name: Update GitHub Stats
 
 on:
   schedule:
-    - cron: '0 0 * * 0'
-  workflow_dispatch:
+    - cron: '0 0 * * 0' # Runs every Sunday at midnight
+  workflow_dispatch:      # Allows manual trigger
 
 permissions:
   contents: write
 
 jobs:
-  publish:
+  github-metrics:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
+      - name: Generate Professional Metrics
+        uses: lowlighter/metrics@latest
         with:
-          fetch-depth: 0
-
-      # Note: We are using two different API providers to ensure reliability
-      - name: Download Stats Cards
-        run: |
-          # 1. General Stats (Includes private commits/stars)
-          curl -H "Authorization: token ${{ secrets.GH_TOKEN }}" -o profile-stats.svg "https://github-readme-stats.vercel.app/api?username=silvixp&show_icons=true&count_private=true&theme=tokyonight&rank_icon=github"
+          # Your PAT is required to see private/company data
+          token: ${{ secrets.GH_TOKEN }}
           
-          # 2. Activity Graph (Improved Labels & Styling)
-          # 'custom_title' renames the graph
-          # 'area=true' makes the line a filled-in wave
-          curl -o profile-graph.svg "https://github-readme-activity-graph.vercel.app/graph?username=silvixp&theme=tokyo-night&area=true&hide_border=true&point_size=0&custom_title=Weekly%20Contribution%20Momentum"
-
-      - name: Commit and Push
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add profile-stats.svg profile-graph.svg
+          # Output file name
+          filename: profile-stats.svg
           
-          if git diff --staged --quiet; then
-            echo "No changes, skipping push."
-            exit 0
-          fi
-
-          git commit -m "Update GitHub stats [skip ci]"
-          git pull --rebase origin main
-          git push origin main
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          # Core Settings
+          base: header, activity, community, repositories, metadata
+          config_timezone: UTC
+          base_indepth: yes          # Forces deep scan of all commits (Fixes the "10 commits" issue)
+          
+          # Activity Graph (Isometric Calendar)
+          # This replaces the "weird" graph with a professional 3D activity view
+          plugin_isocalendar: yes
+          plugin_isocalendar_duration: half-year
+          
+          # Styling
+          config_order: base.header, isocalendar, base.activity, base.repositories
+          template: classic
+          config_theme: tokyonight   # Matches your preferred dark theme
+          
+          # Private Data Handling
+          config_padding: 0, 8%
+          output_action: commit      # Automatically commits the file to your repo
+          committer_branch: main
+          committer_message: "Update GitHub metrics [skip ci]"
