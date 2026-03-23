@@ -10,3 +10,8 @@
 <div align="center">
   <img src="./profile-graph.svg" alt="Activity Graph" width="100%" />
 </div>
+
+<p align="center">
+  <i>The graph above shows my contribution frequency over the last year. 
+  Peaks represent high-intensity development periods.</i>
+</p>
