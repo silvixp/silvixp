@@ -17,9 +17,7 @@ jobs:
         with:
           token: ${{ secrets.GH_TOKEN }}
           filename: profile-stats.svg
-          
-          # Use the 'repository' template for a much cleaner, spaced-out layout
-          template: repository
+
           config_theme: tokyonight
           
           # Focus only on high-value data
